@@ -11,13 +11,15 @@ mod routes {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let ldp = "127.0.0.1:8080";
+    println!("{}", format!("server running at: http://{}", ldp));
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(controllers::welcome::landing))
             .route("/echo", web::post().to(controllers::welcome::echo))
             .service(routes::user::user_routes())
     })
-    .bind("127.0.0.1:8080")?
+    .bind(ldp)?
     .run()
     .await
 }
