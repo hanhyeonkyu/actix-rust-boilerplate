@@ -1,6 +1,6 @@
-## Actix Rust APP
+## Actix Rust Boilerplate
 
 ### Development
 ```zsh
-cargo watch -x 'run --bin app
+cargo watch -x 'run --bin app'
 ```
