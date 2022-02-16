@@ -8,9 +8,9 @@ pub struct IUserAll {
   pub mg: String,
 }
 
-// #[derive(Serialize, Deserialize, Debug, Clone)]
-// pub struct IUserOne {
-//   pub rt: bool,
-//   pub dt: IUser,
-//   pub mg: String,
-// }
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct IUserOne {
+  pub rt: bool,
+  pub dt: User,
+  pub mg: String,
+}

@@ -7,7 +7,7 @@ pub async fn user_all() -> Result<web::Json<types::user::IUserAll>> {
   Ok(web::Json(ret))
 }
 
-// pub async fn user_one() -> Result<web::Json<types::user::IUserOne>> {
-//   let ret = services::user::user_one().await;
-//   Ok(web::Json(ret))
-// }
+pub async fn user_one(id: web::Path<String>) -> Result<web::Json<types::user::IUserOne>> {
+  let ret = services::user::user_one(id.to_string()).await;
+  Ok(web::Json(ret))
+}

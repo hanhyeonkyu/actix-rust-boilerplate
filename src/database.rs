@@ -4,6 +4,7 @@ pub mod schema;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
+use uuid::Uuid;
 
 use models::*;
 use schema::users;
@@ -22,4 +23,29 @@ pub fn get_users() -> Vec<User> {
   users
     .load::<User>(&connection)
     .expect("Error loading users")
+}
+
+pub fn get_user(search_id: String) -> User {
+  let connection = establish_connection();
+  users
+    .find(search_id)
+    .first(&connection)
+    .expect("Error loading users")
+}
+
+pub fn create_user(name: &str, age: &i32, email: &str, pwd: &str) -> String {
+  let connection = establish_connection();
+  let uuid = Uuid::new_v4().to_hyphenated().to_string();
+  let new_user = vec![NewUser {
+    id: &uuid,
+    name: name,
+    age: age,
+    email: email,
+    pwd: pwd,
+  }];
+  diesel::insert_into(users::table)
+    .values(&new_user)
+    .execute(&connection)
+    .expect("Error create new user");
+  uuid
 }
