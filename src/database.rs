@@ -33,19 +33,31 @@ pub fn get_user(search_id: String) -> User {
     .expect("Error loading users")
 }
 
-pub fn create_user(name: &str, age: &i32, email: &str, pwd: &str) -> String {
+pub fn create_user(new_user: NewUser) -> String {
   let connection = establish_connection();
   let uuid = Uuid::new_v4().to_hyphenated().to_string();
-  let new_user = vec![NewUser {
-    id: &uuid,
-    name: name,
-    age: age,
-    email: email,
-    pwd: pwd,
-  }];
   diesel::insert_into(users::table)
-    .values(&new_user)
+    .values((
+      id.eq(&uuid),
+      name.eq(new_user.name),
+      age.eq(new_user.age),
+      email.eq(new_user.email),
+      pwd.eq(new_user.pwd),
+    ))
     .execute(&connection)
     .expect("Error create new user");
   uuid
+}
+
+pub fn update_user(key: String, mod_user: NewUser) -> usize {
+  let connection = establish_connection();
+  diesel::update(users.find(key))
+    .set((
+      name.eq(mod_user.name),
+      age.eq(mod_user.age),
+      email.eq(mod_user.email),
+      pwd.eq(mod_user.pwd),
+    ))
+    .execute(&connection)
+    .expect("Can't Update User")
 }
