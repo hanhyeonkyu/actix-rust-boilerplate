@@ -1,61 +1,72 @@
 use crate::database::*;
-use crate::models::*;
+use crate::schema::users::dsl::*;
 use crate::types;
 use actix_web::web;
+use diesel::SqliteConnection;
 
-pub async fn user_all() -> types::user::IUserAll {
-  let dt = get_users();
-  let ret = types::user::IUserAll {
-    rt: true,
-    dt,
-    mg: "success".to_string(),
-  };
-  return ret;
+use diesel::prelude::*;
+use uuid::Uuid;
+
+use models::*;
+type DbError = Box<dyn std::error::Error + Send + Sync>;
+
+pub fn user_all(conn: &mut SqliteConnection) -> Result<Option<Vec<models::User>>, DbError> {
+    let ret = users
+        .order(id.desc())
+        .load::<models::User>(conn)
+        .optional()?;
+    Ok(ret)
 }
 
-pub async fn user_one(id: String) -> types::user::IUserOne {
-  let dt = get_user(id);
-  let ret = types::user::IUserOne {
-    rt: true,
-    dt,
-    mg: "success".to_string(),
-  };
-  return ret;
+pub fn find_user_by_uid(
+    conn: &mut SqliteConnection,
+    uid: String,
+) -> Result<Option<models::User>, DbError> {
+    let user = users
+        .filter(id.eq(uid))
+        .first::<models::User>(conn)
+        .optional()?;
+
+    Ok(user)
 }
 
-pub async fn make_user(body: web::Json<types::user::IMakeUserReq>) -> types::user::IMakeUserRes {
-  let new_user = NewUser {
-    id: "will be change uuid",
-    name: &body.name,
-    age: &body.age,
-    email: &body.email,
-    pwd: &body.pwd,
-  };
-  let dt = create_user(new_user);
-  let ret = types::user::IMakeUserRes {
-    rt: true,
-    dt,
-    mg: "success".to_string(),
-  };
-  return ret;
+pub fn make_user(
+    conn: &mut SqliteConnection,
+    body: web::Json<types::user::IMakeUserReq>,
+) -> Result<Option<models::User>, DbError> {
+    let new_user = User {
+        id: Uuid::new_v4().to_string(),
+        name: body.name.to_string(),
+        age: body.age,
+        email: body.email.to_string(),
+        pwd: body.pwd.to_string(),
+    };
+    diesel::insert_into(users).values(&new_user).execute(conn)?;
+
+    Ok(Some(new_user))
 }
 
-pub async fn change_user(
-  id: String,
-  body: web::Json<types::user::IChangeUserReq>,
-) -> types::user::IChangeUserRes {
-  let mod_user = NewUser {
-    id: "will be change uuid",
-    name: &body.name,
-    age: &body.age,
-    email: &body.email,
-    pwd: &body.pwd,
-  };
-  let dt = update_user(id, mod_user);
-  let ret = types::user::IChangeUserRes {
-    rt: true,
-    dt,
-    mg: "success".to_string(),
-  };
-  return ret;
+pub fn change_user(
+    conn: &mut SqliteConnection,
+    uid: String,
+    body: web::Json<types::user::IChangeUserReq>,
+) -> Result<Option<models::ModUser>, DbError> {
+    let mod_user = ModUser {
+        name: body.name.to_string(),
+        age: body.age,
+        email: body.email.to_string(),
+        pwd: body.pwd.to_string(),
+    };
+
+    diesel::update(users.filter(id.eq(uid)))
+        .set((
+            name.eq(body.name.to_string()),
+            age.eq(body.age),
+            email.eq(body.email.to_string()),
+            pwd.eq(body.pwd.to_string()),
+        ))
+        .execute(conn)
+        .optional()?;
+
+    Ok(Some(mod_user))
 }

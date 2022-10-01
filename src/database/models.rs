@@ -1,21 +1,19 @@
 use super::schema::users;
-use serde::{Deserialize, Serialize};
+use serde_derive::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Queryable)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable, Selectable)]
 pub struct User {
-  pub id: String,
-  pub name: String,
-  pub age: i32,
-  pub email: String,
-  pub pwd: String,
+    pub id: String,
+    pub name: String,
+    pub age: i32,
+    pub email: String,
+    pub pwd: String,
 }
 
-#[derive(Insertable)]
-#[table_name = "users"]
-pub struct NewUser<'a> {
-  pub id: &'a str,
-  pub name: &'a str,
-  pub age: &'a i32,
-  pub email: &'a str,
-  pub pwd: &'a str,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModUser {
+    pub name: String,
+    pub age: i32,
+    pub email: String,
+    pub pwd: String,
 }
