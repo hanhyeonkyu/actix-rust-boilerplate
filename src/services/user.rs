@@ -1,19 +1,19 @@
 use crate::database::*;
-use crate::schema::users::dsl::*;
 use crate::types;
+use crate::user_schema::users::dsl::*;
 use actix_web::web;
 use diesel::SqliteConnection;
 
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use models::*;
+use user_model::*;
 type DbError = Box<dyn std::error::Error + Send + Sync>;
 
-pub fn user_all(conn: &mut SqliteConnection) -> Result<Option<Vec<models::User>>, DbError> {
+pub fn user_all(conn: &mut SqliteConnection) -> Result<Option<Vec<user_model::User>>, DbError> {
     let ret = users
         .order(id.desc())
-        .load::<models::User>(conn)
+        .load::<user_model::User>(conn)
         .optional()?;
     Ok(ret)
 }
@@ -21,10 +21,10 @@ pub fn user_all(conn: &mut SqliteConnection) -> Result<Option<Vec<models::User>>
 pub fn find_user_by_uid(
     conn: &mut SqliteConnection,
     uid: String,
-) -> Result<Option<models::User>, DbError> {
+) -> Result<Option<user_model::User>, DbError> {
     let user = users
         .filter(id.eq(uid))
-        .first::<models::User>(conn)
+        .first::<user_model::User>(conn)
         .optional()?;
 
     Ok(user)
@@ -33,7 +33,7 @@ pub fn find_user_by_uid(
 pub fn make_user(
     conn: &mut SqliteConnection,
     body: web::Json<types::user::IMakeUserReq>,
-) -> Result<Option<models::User>, DbError> {
+) -> Result<Option<user_model::User>, DbError> {
     let new_user = User {
         id: Uuid::new_v4().to_string(),
         name: body.name.to_string(),
@@ -50,7 +50,7 @@ pub fn change_user(
     conn: &mut SqliteConnection,
     uid: String,
     body: web::Json<types::user::IChangeUserReq>,
-) -> Result<Option<models::ModUser>, DbError> {
+) -> Result<Option<user_model::ModUser>, DbError> {
     let mod_user = ModUser {
         name: body.name.to_string(),
         age: body.age,

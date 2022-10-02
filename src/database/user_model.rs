@@ -1,4 +1,4 @@
-use super::schema::users;
+use super::user_schema::users;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable, Selectable)]

@@ -1,4 +1,4 @@
-use crate::{database::models::ModUser, models::User};
+use crate::{database::user_model::ModUser, user_model::User};
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
