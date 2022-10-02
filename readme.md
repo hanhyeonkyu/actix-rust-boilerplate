@@ -4,6 +4,7 @@
 ---
 ### Development
   ```zsh
+  cp .env.example .env
   # for develop with watch
   cargo watch -x run
   # just run
