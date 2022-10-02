@@ -16,7 +16,7 @@ mod routes {
 mod services {
     pub mod user;
 }
-mod types {
+mod interfaces {
     pub mod global;
     pub mod user;
 }

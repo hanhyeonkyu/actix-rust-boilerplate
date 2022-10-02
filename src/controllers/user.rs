@@ -1,14 +1,14 @@
+use crate::interfaces;
+use crate::interfaces::global::TDbPool;
+use crate::interfaces::user::IChangeUserRes;
+use crate::interfaces::user::IMakeUserRes;
+use crate::interfaces::user::IUserAll;
+use crate::interfaces::user::IUserOne;
 use crate::services;
-use crate::types;
-use crate::types::global::TDbPool;
-use crate::types::user::IChangeUserRes;
-use crate::types::user::IMakeUserRes;
-use crate::types::user::IUserAll;
-use crate::types::user::IUserOne;
 use actix_web::{web, Result};
 use uuid::Uuid;
 
-pub async fn user_all(pool: web::Data<TDbPool>) -> Result<web::Json<types::user::IUserAll>> {
+pub async fn user_all(pool: web::Data<TDbPool>) -> Result<web::Json<interfaces::user::IUserAll>> {
     println!("Failed to perform necessary steps: {}", "test");
     let users = web::block(move || {
         let mut conn = pool.get()?;
@@ -35,7 +35,7 @@ pub async fn user_all(pool: web::Data<TDbPool>) -> Result<web::Json<types::user:
 pub async fn user_one(
     pool: web::Data<TDbPool>,
     user_uid: web::Path<Uuid>,
-) -> Result<web::Json<types::user::IUserOne>> {
+) -> Result<web::Json<interfaces::user::IUserOne>> {
     let user_uid = user_uid.into_inner();
     // use web::block to offload blocking Diesel code without blocking server thread
     let user = web::block(move || {
@@ -61,8 +61,8 @@ pub async fn user_one(
 
 pub async fn make_user(
     pool: web::Data<TDbPool>,
-    body: web::Json<types::user::IMakeUserReq>,
-) -> Result<web::Json<types::user::IMakeUserRes>> {
+    body: web::Json<interfaces::user::IMakeUserReq>,
+) -> Result<web::Json<interfaces::user::IMakeUserRes>> {
     let user = web::block(move || {
         let mut conn = pool.get()?;
         services::user::make_user(&mut conn, body)
@@ -87,8 +87,8 @@ pub async fn make_user(
 pub async fn change_user(
     pool: web::Data<TDbPool>,
     user_uid: web::Path<Uuid>,
-    body: web::Json<types::user::IChangeUserReq>,
-) -> Result<web::Json<types::user::IChangeUserRes>> {
+    body: web::Json<interfaces::user::IChangeUserReq>,
+) -> Result<web::Json<interfaces::user::IChangeUserRes>> {
     let user = web::block(move || {
         let mut conn = pool.get()?;
         services::user::change_user(&mut conn, user_uid.to_string(), body)

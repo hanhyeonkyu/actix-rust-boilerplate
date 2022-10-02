@@ -1,5 +1,5 @@
 use crate::database::*;
-use crate::types;
+use crate::interfaces;
 use crate::user_schema::users::dsl::*;
 use actix_web::web;
 use diesel::SqliteConnection;
@@ -32,7 +32,7 @@ pub fn find_user_by_uid(
 
 pub fn make_user(
     conn: &mut SqliteConnection,
-    body: web::Json<types::user::IMakeUserReq>,
+    body: web::Json<interfaces::user::IMakeUserReq>,
 ) -> Result<Option<user_model::User>, DbError> {
     let new_user = User {
         id: Uuid::new_v4().to_string(),
@@ -49,7 +49,7 @@ pub fn make_user(
 pub fn change_user(
     conn: &mut SqliteConnection,
     uid: String,
-    body: web::Json<types::user::IChangeUserReq>,
+    body: web::Json<interfaces::user::IChangeUserReq>,
 ) -> Result<Option<user_model::ModUser>, DbError> {
     let mod_user = ModUser {
         name: body.name.to_string(),

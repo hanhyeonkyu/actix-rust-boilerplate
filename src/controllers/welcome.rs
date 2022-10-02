@@ -1,4 +1,4 @@
-use crate::types::global;
+use crate::interfaces::global;
 use actix_web::{web, Result};
 
 pub async fn landing() -> Result<String> {
